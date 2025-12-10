@@ -7,7 +7,7 @@ import tempfile
 import os
 import shutil
 import requests
-import cv2
+from io import BytesIO
 
 st.set_page_config(
     page_title="Human vs AI Image Detector",
@@ -139,12 +139,11 @@ def main():
         response = requests.get(image_url)
 
         if response.status_code == 200:
-            print("Gambar berhasil didownload ke memori.")
-
-            image_array = np.frombuffer(response.content, dtype=np.uint8)
-            image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # ubah BGR → RGB
-            image = Image.fromarray(image)
+            print("Gambar berhasil diunduh ke memori.")
+            image = Image.open(BytesIO(response.content))
+        else:
+            st.error("Gagal mengunduh gambar dari Instagram.")
+            return
             
         col1, col2 = st.columns(2)
         with col1:
