@@ -6,6 +6,8 @@ import instaloader
 import tempfile
 import os
 import shutil
+import requests
+from io import BytesIO
 
 st.set_page_config(
     page_title="Human vs AI Image Detector",
@@ -43,23 +45,6 @@ def preprocess_image(image, target_size=(512, 512)):
     darkened_image_array = img_array * darkening_factor
     
     return darkened_image_array
-
-def preprocess_image_post(image, target_size=(512, 512)):
-    """
-    Mengubah ukuran, menormalisasi, dan menggelapkan gambar agar sesuai
-    dengan input model.
-    """
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-    
-    img = image.resize(target_size)
-    
-    img_array = np.array(img)
-    img_array = np.expand_dims(img_array, axis=0) 
-    
-    img_array = img_array / 255.0
-    
-    return img_array
 
 def getLinkPost(link):
     shortcode = link.split("/p/")[1].split("/")[0]
@@ -137,11 +122,14 @@ def main():
         shortcode = getLinkPost(ig_url)
         L = instaloader.Instaloader()
         
-        # Download gambar
         try:
             post = instaloader.Post.from_shortcode(L.context, shortcode)
         except instaloader.exceptions.BadResponseException:
             st.error("⚠️ Post tidak bisa diakses. Kemungkinan akun private.")
+            return
+        except Exception:
+            st.error("❌ Tidak dapat mengakses Instagram. Kemungkinan IP server diblokir IG.")
+            st.info("Silakan unggah gambar secara manual.")
             return
 
         if post.is_video:
@@ -150,58 +138,42 @@ def main():
         
         st.success("🔓 Akun bersifat public — melanjutkan download.")
 
-        
-        
-        temp_dir = tempfile.mkdtemp()
-        L.dirname_pattern = temp_dir
-        L.filename_pattern = "img_{shortcode}"
+        image_url = post.url 
+        response = requests.get(image_url)
 
-        try:
-            L.download_post(post, target="")
-
-            # Cari file .jpg di folder download
-            downloaded_images = [
-                os.path.join(temp_dir, f)
-                for f in os.listdir(temp_dir)
-                if f.lower().endswith((".jpg", ".jpeg", ".png"))
-            ]
-
-            if not downloaded_images:
-                st.error("Tidak ditemukan gambar dari link tersebut.")
-                return
-
-            img_path = downloaded_images[0]  # Ambil gambar pertama
-            image = Image.open(img_path)
+        if response.status_code == 200:
+            print("Gambar berhasil diunduh ke memori.")
+            image = Image.open(BytesIO(response.content))
+        else:
+            st.error("Gagal mengunduh gambar dari Instagram.")
+            return
             
-            col1, col2 = st.columns(2)
-            with col1:
-                st.image(image, caption="Gambar yang Diunggah", use_container_width=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(image, caption="Gambar yang Diunggah", use_container_width=True)
+            
+        with st.spinner('Menganalisis gambar...'):
+            processed_image = preprocess_image(image)
+            prediction = model.predict(processed_image)
                 
-            with st.spinner('Menganalisis gambar...'):
-                processed_image = preprocess_image_post(image)
-                prediction = model.predict(processed_image)
-                    
-                prob_ai = float(prediction[0][0])
-                prob_human = 1 - prob_ai
-                hasil_prediksi = "Manusia" if prob_human > prob_ai else "AI"
-                confidence = max(prob_human, prob_ai)
+            prob_ai = float(prediction[0][0])
+            prob_human = 1 - prob_ai
+            hasil_prediksi = "Manusia" if prob_human > prob_ai else "AI"
+            confidence = max(prob_human, prob_ai)
 
-            with col2:
-                st.subheader("Hasil Prediksi:")
-                if hasil_prediksi == "Manusia":
-                    st.success("✅ Gambar ini sepertinya dibuat oleh **Manusia**.")
-                else:
-                    st.error("🤖 Gambar ini sepertinya dibuat oleh **AI**.")
-                    
-                st.metric(label="Tingkat Keyakinan", value=f"{confidence:.2%}")
-                st.write("Detail Probabilitas:")
-                st.write(f"- Manusia: `{prob_human:.2%}`")
-                st.write(f"- AI: `{prob_ai:.2%}`")
+        with col2:
+            st.subheader("Hasil Prediksi:")
+            if hasil_prediksi == "Manusia":
+                st.success("✅ Gambar ini sepertinya dibuat oleh **Manusia**.")
+            else:
+                st.error("🤖 Gambar ini sepertinya dibuat oleh **AI**.")
+                
+            st.metric(label="Tingkat Keyakinan", value=f"{confidence:.2%}")
+            st.write("Detail Probabilitas:")
+            st.write(f"- Manusia: `{prob_human:.2%}`")
+            st.write(f"- AI: `{prob_ai:.2%}`")
 
             st.divider()
-
-        finally:
-            shutil.rmtree(temp_dir, ignore_errors=True)
 
 if __name__ == "__main__":
     main()
