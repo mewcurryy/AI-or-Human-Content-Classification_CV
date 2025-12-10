@@ -1,9 +1,9 @@
 streamlit
 tensorflow
-Pillow
+pillow
 numpy
+requests
 instaloader
-opencv-python
 kagglehub
 pandas
 plotly
