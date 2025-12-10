@@ -128,10 +128,10 @@ def main():
         except instaloader.exceptions.BadResponseException:
             st.error("⚠️ Post tidak bisa diakses. Kemungkinan akun private.")
             return
-        except instaloader.exceptions.ConnectionException:
-            st.warning("⚠️ Tidak bisa mengambil post Instagram karena kendala access.")
-            st.info("Silakan coba gambar upload manual saja.")
-            return
+        # except instaloader.exceptions.ConnectionException:
+        #     st.warning("⚠️ Tidak bisa mengambil post Instagram karena kendala access.")
+        #     st.info("Silakan coba gambar upload manual saja.")
+        #     return
 
         if post.is_video:
             st.error("🚫 Post ini berupa video. Hanya gambar yang bisa diproses.")
@@ -177,4 +177,5 @@ def main():
             st.divider()
 
 if __name__ == "__main__":
+
     main()
