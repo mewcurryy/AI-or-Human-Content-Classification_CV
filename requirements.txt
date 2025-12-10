@@ -4,8 +4,3 @@ pillow
 numpy
 requests
 instaloader
-kagglehub
-pandas
-plotly
-matplotlib
-ipython
