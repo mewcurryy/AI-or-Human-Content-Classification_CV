@@ -1,6 +1,8 @@
-streamlit
+flask
 tensorflow
 pillow
 numpy
 requests
 instaloader
+werkzeug
+gunicorn

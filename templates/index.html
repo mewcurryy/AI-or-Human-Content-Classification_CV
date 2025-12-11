@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human vs AI Image Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🤖 Detektor Gambar: AI vs Manusia</h1>
+            <p>Aplikasi ini bisa mendeteksi apakah gambar dibuat oleh AI atau oleh Manusia dengan menggunakan deep learning.</p>
+        </div>
+        <div class="theme-toggle" id="themeToggle">
+            <div class="theme-toggle-track">
+                <div class="theme-toggle-circle">
+                    <i class="fas fa-sun theme-toggle-icon" id="themeIcon"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="tabs">
+                <div class="tab active" data-tab="upload">📁 Deteksi dari Upload Gambar</div>
+                <div class="tab" data-tab="instagram">📸 Deteksi dari Link Instagram</div>
+            </div>
+
+            <div id="upload" class="tab-content active">
+                <div class="card">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop gambar Anda di sini atau</p>
+                        <button type="button">Pilih File</button>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <div class="loading" id="uploadLoading">
+                        <div class="spinner"></div>
+                        <p>Menganalisis gambar...</p>
+                    </div>
+
+                    <div class="error-message" id="uploadError"></div>
+
+                    <div class="result-container" id="uploadResult">
+                        <div class="result-card">
+                            <div class="result-header">
+                                <div class="result-icon" id="uploadResultIcon">
+                                </div>
+                                <div class="result-title" id="uploadResultTitle">
+                                </div>
+                            </div>
+
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Tingkat Keyakinan</span>
+                                    <span id="uploadConfidence">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="uploadProgressBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-details">
+                                <div class="detail-item">
+                                    <span>Probabilitas Manusia</span>
+                                    <span id="uploadProbHuman">0%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>Probabilitas AI</span>
+                                    <span id="uploadProbAI">0%</span>
+                                </div>
+                            </div>
+
+                            <div class="image-preview">
+                                <img id="uploadImagePreview" src="" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="instagram" class="tab-content">
+                <div class="card">
+                    <div class="input-group">
+                        <label for="instagramUrl">Masukkan link Instagram Post:</label>
+                        <input type="text" id="instagramUrl" placeholder="https://www.instagram.com/p/Cxxxx/">
+                    </div>
+
+                    <button class="btn" id="analyzeInstagramBtn">Analisis Gambar</button>
+
+                    <div class="loading" id="instagramLoading">
+                        <div class="spinner"></div>
+                        <p>Menganalisis gambar...</p>
+                    </div>
+
+                    <div class="error-message" id="instagramError"></div>
+
+                    <div class="result-container" id="instagramResult">
+                        <div class="result-card">
+                            <div class="result-header">
+                                <div class="result-icon" id="instagramResultIcon">
+                                </div>
+                                <div class="result-title" id="instagramResultTitle">
+                                </div>
+                            </div>
+
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Tingkat Keyakinan</span>
+                                    <span id="instagramConfidence">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="instagramProgressBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-details">
+                                <div class="detail-item">
+                                    <span>Probabilitas Manusia</span>
+                                    <span id="instagramProbHuman">0%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>Probabilitas AI</span>
+                                    <span id="instagramProbAI">0%</span>
+                                </div>
+                            </div>
+
+                            <div class="image-preview">
+                                <img id="instagramImagePreview" src="" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Human vs AI Image Detector. All rights reserved.</p>
+        </div>
+    </footer>
+
+    
+</body>
+</html>
