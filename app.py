@@ -18,7 +18,6 @@ st.set_page_config(
 
 @st.cache_resource
 def load_keras_model(model_path):
-    """Memuat model Keras dari path yang diberikan."""
     try:
         model = tf.keras.models.load_model(model_path)
         return model
@@ -27,10 +26,6 @@ def load_keras_model(model_path):
         return None
 
 def preprocess_image(image, target_size=(512, 512)):
-    """
-    Mengubah ukuran, menormalisasi, dan menggelapkan gambar agar sesuai
-    dengan input model.
-    """
     if image.mode != "RGB":
         image = image.convert("RGB")
     
@@ -52,7 +47,7 @@ def getLinkPost(link):
     return shortcode
 
 def main():
-    st.title("🤖 Detektor Gambar: AI vs Manusia")
+    st.title("🤖 Human vs AI Image Detector")
     st.markdown("""
         Aplikasi ini bisa mendeteksi apakah gambar dibuat oleh **AI** atau oleh **Manusia** dengan menggunakan deep learning.
     """)
@@ -106,7 +101,7 @@ def main():
     st.header("📸 Deteksi dari Link Instagram")
 
     ig_url = st.text_input(
-        "Masukkan link Instagram (post/photo/profil):",
+        "Masukkan link Instagram Post:",
         placeholder="https://www.instagram.com/p/Cxxxx/"
     )
 
